@@ -39,7 +39,7 @@ contract Ludo {
         require(msg.sender != address(0), "invalid caller");
         require(_playerCount <= 4, "max players exceeded");
         uint count = gameCount + 1;
-        LudoGame memory newGame = game[count];
+        LudoGame storage newGame = game[count];
         newGame.gameId = count;
         newGame.noOfPlayers = _playerCount;
         newGame.winningNumber = _winningNumber;
@@ -53,7 +53,7 @@ contract Ludo {
     function addPlayer(string memory _name, uint _gameId, address _playerAddy) external {
         require(msg.sender != address(0), "invalid caller");
         LudoGame storage targetGame = game[_gameId];
-        // require(targetGame.gameId != 0, "invalid game ID");
+        require(targetGame.gameId != 0, "invalid game ID");
         require(targetGame.noOfPlayers <= 4, "max players exceeded");
         require(!isPlayer[_playerAddy][_gameId], "player already added");
         uint count = playerCount + 1;
@@ -70,7 +70,7 @@ contract Ludo {
         emit PlayerAdded();
     }
 
-    function playGame(uint _gameId) external returns (uint) {
+    function playGame(uint _gameId) external returns (uint randomNo) {
         require(msg.sender != address(0), "invalid caller");
         LudoGame storage targetGame = game[_gameId];
         require(targetGame.gameId != 0, "invalid game ID");
@@ -78,8 +78,10 @@ contract Ludo {
         if (!targetGame.hasStarted) {
             targetGame.hasStarted = true;
         }
-        uint randomNo = uint(keccak256(abi.encodePacked(msg.sender, _gameId)));
-        return randomNo % 10^16;
+        uint rand = uint(keccak256(abi.encodePacked(msg.sender, _gameId)));
+        randomNo = rand % 10^16;
+
+        targetPlayer
     }
 
 }
